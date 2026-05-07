@@ -340,7 +340,7 @@ async function submitTechnician(event) {
     els.techForm.reset();
     await refreshAfterMutation();
   } catch (error) {
-    alert(error.message);
+    alert(formatSupabaseError(error, "technician"));
   }
 }
 
@@ -353,7 +353,7 @@ async function submitReason(event) {
     els.reasonForm.reset();
     await refreshAfterMutation();
   } catch (error) {
-    alert(error.message);
+    alert(formatSupabaseError(error, "replacement reason"));
   }
 }
 
@@ -560,6 +560,14 @@ function updateSync(title, detail, live) {
 function showMessage(element, message, isError = false) {
   element.textContent = message;
   element.classList.toggle("error", isError);
+}
+
+function formatSupabaseError(error, label) {
+  const message = error?.message || "Unknown Supabase error.";
+  if (message.toLowerCase().includes("row-level security")) {
+    return `Supabase blocked this ${label}. Run the latest supabase-schema.sql in the Supabase SQL editor, then try again.`;
+  }
+  return message;
 }
 
 function escapeHtml(value) {
