@@ -1,4 +1,3 @@
-const STORAGE_KEY = "replacement-dashboard-config";
 const DEMO_KEY = "replacement-dashboard-demo";
 
 const demoData = {
@@ -53,7 +52,7 @@ async function init() {
     year: "numeric"
   }).format(new Date());
   els.entryDate.value = new Date().toISOString().slice(0, 10);
-  await connectFromSavedConfig();
+  connectFromAppConfig();
   await loadAll();
 }
 
@@ -88,12 +87,7 @@ function cacheElements() {
     techList: document.querySelector("#tech-list"),
     reasonForm: document.querySelector("#reason-form"),
     reasonName: document.querySelector("#reason-name"),
-    reasonList: document.querySelector("#reason-list"),
-    configForm: document.querySelector("#config-form"),
-    supabaseUrl: document.querySelector("#supabase-url"),
-    supabaseKey: document.querySelector("#supabase-key"),
-    clearConfig: document.querySelector("#clear-config"),
-    configMessage: document.querySelector("#config-message")
+    reasonList: document.querySelector("#reason-list")
   });
 }
 
@@ -109,22 +103,18 @@ function wireEvents() {
   els.replacementForm.addEventListener("submit", submitReplacement);
   els.techForm.addEventListener("submit", submitTechnician);
   els.reasonForm.addEventListener("submit", submitReason);
-  els.configForm.addEventListener("submit", saveConfig);
-  els.clearConfig.addEventListener("click", clearConfig);
 }
 
-async function connectFromSavedConfig() {
-  const config = getConfig();
-  if (!config?.url || !config?.key || !window.supabase) {
+function connectFromAppConfig() {
+  const config = window.REPLACEMENT_DASHBOARD_CONFIG || {};
+  if (!config.supabaseUrl || !config.supabaseAnonKey || !window.supabase) {
     state.mode = "demo";
     state.client = null;
-    updateSync("Demo data", "Save Supabase details to share live metrics.", false);
+    updateSync("Demo data", "Add Supabase details in config.js for shared metrics.", false);
     return;
   }
 
-  els.supabaseUrl.value = config.url;
-  els.supabaseKey.value = config.key;
-  state.client = window.supabase.createClient(config.url, config.key);
+  state.client = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
   state.mode = "supabase";
   updateSync("Supabase connected", "Live shared dashboard data.", true);
 }
@@ -151,8 +141,8 @@ async function loadAll() {
   } catch (error) {
     state.mode = "demo";
     state.client = null;
-    updateSync("Demo data", "Supabase failed to load. Check setup and policies.", false);
-    showMessage(els.configMessage, error.message, true);
+    updateSync("Demo data", "Supabase failed to load. Check config.js and policies.", false);
+    showMessage(els.entryMessage, error.message, true);
     await loadAll();
   }
 }
@@ -403,29 +393,6 @@ async function deleteItem(type, id) {
   render();
 }
 
-async function saveConfig(event) {
-  event.preventDefault();
-  const url = els.supabaseUrl.value.trim();
-  const key = els.supabaseKey.value.trim();
-  if (!url || !key) {
-    showMessage(els.configMessage, "Enter both Supabase fields.", true);
-    return;
-  }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ url, key }));
-  showMessage(els.configMessage, "Connection saved. Loading shared data...");
-  await connectFromSavedConfig();
-  await loadAll();
-}
-
-async function clearConfig() {
-  localStorage.removeItem(STORAGE_KEY);
-  els.supabaseUrl.value = "";
-  els.supabaseKey.value = "";
-  await connectFromSavedConfig();
-  await loadAll();
-  showMessage(els.configMessage, "Demo data is active on this browser.");
-}
-
 function filteredReplacements() {
   return recordsForSelectedTech(filteredByRange(state.replacements));
 }
@@ -523,14 +490,6 @@ function saveDemo() {
         replacements: state.replacements
       })
     );
-  }
-}
-
-function getConfig() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-  } catch {
-    return null;
   }
 }
 

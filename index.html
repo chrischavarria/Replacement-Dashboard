@@ -24,7 +24,6 @@
           <a href="#new-entry">New replacement</a>
           <a href="#analytics">Technician trends</a>
           <a href="#manage">Manage lists</a>
-          <a href="#setup">Supabase setup</a>
         </nav>
         <div class="sync-card" id="sync-card">
           <span class="status-dot"></span>
@@ -190,34 +189,11 @@
           </div>
         </section>
 
-        <section id="setup" class="section-band setup-section">
-          <div>
-            <span class="eyebrow">Shared access</span>
-            <h2>Supabase connection</h2>
-            <p class="section-copy">
-              Add your Supabase project URL and anon key here, then publish these files anywhere. Everyone with the link will see the same metrics as long as your Supabase Row Level Security policies allow the shared access you want.
-            </p>
-          </div>
-          <form class="setup-form" id="config-form">
-            <label>
-              Supabase URL
-              <input id="supabase-url" type="url" placeholder="https://your-project.supabase.co" />
-            </label>
-            <label>
-              Supabase anon key
-              <input id="supabase-key" type="password" placeholder="eyJ..." />
-            </label>
-            <div class="button-row">
-              <button type="submit" class="primary-button">Save connection</button>
-              <button type="button" id="clear-config" class="secondary-button">Use demo data</button>
-            </div>
-            <p class="form-message" id="config-message" role="status"></p>
-          </form>
-        </section>
       </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./config.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>

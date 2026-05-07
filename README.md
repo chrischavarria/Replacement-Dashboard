@@ -4,17 +4,18 @@ A clean shared dashboard for tracking replacements caused by technician errors o
 
 ## Open locally
 
-Open `index.html` in a browser. Without Supabase configured, the dashboard runs with browser-local demo data so you can test the workflow immediately.
+Open `index.html` in a browser. Without Supabase configured in `config.js`, the dashboard runs with browser-local demo data so you can test the workflow immediately.
 
 ## Connect Supabase
 
 1. Create a Supabase project.
 2. Open the SQL editor and run `supabase-schema.sql`.
-3. Open the dashboard and scroll to **Supabase setup**.
-4. Paste your project URL and anon key.
-5. Host the folder anywhere static files can be served.
+3. Open `config.js`.
+4. Paste your project URL into `supabaseUrl`.
+5. Paste your anon public key into `supabaseAnonKey`.
+6. Host the folder anywhere static files can be served.
 
-The included policies allow anyone with the link and anon key to read dashboard metrics, add technicians, add reasons, and submit replacement entries.
+The included policies allow anyone with the link to read dashboard metrics, add technicians, add reasons, and submit replacement entries.
 
 ## Tables
 

@@ -353,8 +353,7 @@ textarea {
   background: var(--accent);
 }
 
-.entry-form,
-.setup-form {
+.entry-form {
   display: grid;
   gap: 14px;
 }
@@ -482,16 +481,9 @@ textarea {
   margin-top: 14px;
 }
 
-.setup-section {
-  display: grid;
-  grid-template-columns: minmax(220px, 0.8fr) minmax(320px, 1.2fr);
-  gap: 28px;
-}
-
 @media (max-width: 1020px) {
   .app-shell,
   .split,
-  .setup-section,
   .dashboard-grid,
   .manage-grid {
     grid-template-columns: 1fr;
