@@ -103,6 +103,8 @@ function wireEvents() {
   els.replacementForm.addEventListener("submit", submitReplacement);
   els.techForm.addEventListener("submit", submitTechnician);
   els.reasonForm.addEventListener("submit", submitReason);
+  window.addEventListener("focus", refreshSharedData);
+  window.setInterval(refreshSharedData, 30000);
 }
 
 function connectFromAppConfig() {
@@ -323,7 +325,7 @@ async function submitReplacement(event) {
     els.replacementForm.reset();
     els.entryDate.value = new Date().toISOString().slice(0, 10);
     showMessage(els.entryMessage, "Replacement submitted.");
-    render();
+    await refreshAfterMutation();
   } catch (error) {
     showMessage(els.entryMessage, error.message, true);
   }
@@ -336,7 +338,7 @@ async function submitTechnician(event) {
   try {
     await insertRecord("replacement_technicians", { name }, "technicians");
     els.techForm.reset();
-    render();
+    await refreshAfterMutation();
   } catch (error) {
     alert(error.message);
   }
@@ -349,7 +351,7 @@ async function submitReason(event) {
   try {
     await insertRecord("replacement_reasons", { name }, "reasons");
     els.reasonForm.reset();
-    render();
+    await refreshAfterMutation();
   } catch (error) {
     alert(error.message);
   }
@@ -409,6 +411,20 @@ async function deleteItem(type, id) {
   }
   saveDemo();
   render();
+}
+
+async function refreshAfterMutation() {
+  if (state.mode === "supabase") {
+    await loadAll();
+    return;
+  }
+  render();
+}
+
+async function refreshSharedData() {
+  if (state.mode === "supabase") {
+    await loadAll();
+  }
 }
 
 function confirmTechnicianDelete(id) {
