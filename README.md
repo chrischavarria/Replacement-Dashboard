@@ -13,7 +13,8 @@ Open `index.html` in a browser. Without Supabase configured in `config.js`, the 
 3. Open `config.js`.
 4. Paste your project URL into `supabaseUrl`.
 5. Paste your anon public key into `supabaseAnonKey`.
-6. Host the folder anywhere static files can be served.
+6. Add a removal password into `technicianDeletePassword`.
+7. Host the folder anywhere static files can be served.
 
 The included policies allow anyone with the link to read dashboard metrics, add technicians, add reasons, and submit replacement entries.
 
@@ -26,3 +27,5 @@ The included policies allow anyone with the link to read dashboard metrics, add 
 ## Notes
 
 The anon key is intended for browser use, but access is controlled by Row Level Security policies. If you want only approved people to edit entries, tighten the insert/delete policies and add Supabase Auth.
+
+The technician removal password only hides the delete action behind a browser prompt. Because this is a static site, it prevents casual dashboard edits but should not be treated as private security.

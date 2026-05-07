@@ -373,15 +373,27 @@ async function insertRecord(tableName, payload, stateKey) {
 async function deleteItem(type, id) {
   const stateKey = type === "technician" ? "technicians" : "reasons";
   const tableName = type === "technician" ? "replacement_technicians" : "replacement_reasons";
+  if (type === "technician" && !confirmTechnicianDelete(id)) {
+    return;
+  }
+
   const inUse = state.replacements.some((record) =>
     type === "technician" ? record.technician_id === id : record.reason_id === id
   );
-  if (inUse) {
+  if (inUse && type !== "technician") {
     alert("This item is tied to replacement history, so it cannot be deleted.");
     return;
   }
 
   if (state.mode === "supabase") {
+    if (type === "technician") {
+      const { error: entryError } = await state.client.from("replacement_entries").delete().eq("technician_id", id);
+      if (entryError) {
+        alert(entryError.message);
+        return;
+      }
+    }
+
     const { error } = await state.client.from(tableName).delete().eq("id", id);
     if (error) {
       alert(error.message);
@@ -389,8 +401,38 @@ async function deleteItem(type, id) {
     }
   }
   state[stateKey] = state[stateKey].filter((item) => item.id !== id);
+  if (type === "technician") {
+    state.replacements = state.replacements.filter((record) => record.technician_id !== id);
+    if (state.techFilter === id) {
+      state.techFilter = "all";
+    }
+  }
   saveDemo();
   render();
+}
+
+function confirmTechnicianDelete(id) {
+  const technician = state.technicians.find((item) => item.id === id);
+  const config = window.REPLACEMENT_DASHBOARD_CONFIG || {};
+  const password = config.technicianDeletePassword;
+
+  if (!password) {
+    alert("Add technicianDeletePassword in config.js before removing technicians.");
+    return false;
+  }
+
+  const entered = window.prompt(`Enter the removal password for ${technician?.name || "this technician"}.`);
+  if (entered === null) {
+    return false;
+  }
+  if (entered !== password) {
+    alert("Incorrect password.");
+    return false;
+  }
+
+  return window.confirm(
+    `Remove ${technician?.name || "this technician"} and all replacement history tied to this technician?`
+  );
 }
 
 function filteredReplacements() {

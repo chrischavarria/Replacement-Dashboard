@@ -29,11 +29,13 @@ alter table public.replacement_entries enable row level security;
 drop policy if exists "Public read technicians" on public.replacement_technicians;
 drop policy if exists "Public insert technicians" on public.replacement_technicians;
 drop policy if exists "Public delete unused technicians" on public.replacement_technicians;
+drop policy if exists "Public delete technicians" on public.replacement_technicians;
 drop policy if exists "Public read reasons" on public.replacement_reasons;
 drop policy if exists "Public insert reasons" on public.replacement_reasons;
 drop policy if exists "Public delete unused reasons" on public.replacement_reasons;
 drop policy if exists "Public read entries" on public.replacement_entries;
 drop policy if exists "Public insert entries" on public.replacement_entries;
+drop policy if exists "Public delete entries" on public.replacement_entries;
 
 create policy "Public read technicians"
   on public.replacement_technicians for select
@@ -45,7 +47,7 @@ create policy "Public insert technicians"
   to anon
   with check (true);
 
-create policy "Public delete unused technicians"
+create policy "Public delete technicians"
   on public.replacement_technicians for delete
   to anon
   using (true);
@@ -74,6 +76,11 @@ create policy "Public insert entries"
   on public.replacement_entries for insert
   to anon
   with check (true);
+
+create policy "Public delete entries"
+  on public.replacement_entries for delete
+  to anon
+  using (true);
 
 create index if not exists replacement_entries_date_idx on public.replacement_entries(replacement_date);
 create index if not exists replacement_entries_technician_idx on public.replacement_entries(technician_id);
