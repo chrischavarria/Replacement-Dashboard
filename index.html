@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Replacement Error Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">R</div>
+          <div>
+            <p>Replacement</p>
+            <strong>Quality Dashboard</strong>
+          </div>
+        </div>
+        <nav class="nav" aria-label="Dashboard sections">
+          <a href="#overview" class="active">Overview</a>
+          <a href="#new-entry">New replacement</a>
+          <a href="#analytics">Technician trends</a>
+          <a href="#manage">Manage lists</a>
+          <a href="#setup">Supabase setup</a>
+        </nav>
+        <div class="sync-card" id="sync-card">
+          <span class="status-dot"></span>
+          <div>
+            <p id="sync-title">Checking data source</p>
+            <small id="sync-detail">Preparing dashboard...</small>
+          </div>
+        </div>
+      </aside>
+
+      <main>
+        <header class="topbar">
+          <div>
+            <span class="eyebrow">Operations quality</span>
+            <h1>Replacement Error Dashboard</h1>
+          </div>
+          <div class="date-pill" id="today-pill"></div>
+        </header>
+
+        <section id="overview" class="section-band">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">Current period</span>
+              <h2>Replacement performance</h2>
+            </div>
+            <div class="filters">
+              <label>
+                Range
+                <select id="range-filter">
+                  <option value="30">Last 30 days</option>
+                  <option value="60">Last 60 days</option>
+                  <option value="90">Last 90 days</option>
+                  <option value="365">Last 12 months</option>
+                  <option value="all">All time</option>
+                </select>
+              </label>
+              <label>
+                Technician
+                <select id="tech-filter"></select>
+              </label>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric-card">
+              <span>Total replacements</span>
+              <strong id="total-count">0</strong>
+              <p id="total-note">No records yet</p>
+            </article>
+            <article class="metric-card">
+              <span>Most common reason</span>
+              <strong id="top-reason">-</strong>
+              <p id="top-reason-note">Add reasons to start tracking</p>
+            </article>
+            <article class="metric-card">
+              <span>Highest volume tech</span>
+              <strong id="top-tech">-</strong>
+              <p id="top-tech-note">No technician data yet</p>
+            </article>
+            <article class="metric-card">
+              <span>This month</span>
+              <strong id="month-count">0</strong>
+              <p id="month-note">Compared with prior month</p>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+            <article class="panel wide">
+              <div class="panel-header">
+                <div>
+                  <span class="eyebrow">Trend</span>
+                  <h3>Replacement volume</h3>
+                </div>
+              </div>
+              <div id="trend-chart" class="chart"></div>
+            </article>
+            <article class="panel">
+              <div class="panel-header">
+                <div>
+                  <span class="eyebrow">Reasons</span>
+                  <h3>Common errors</h3>
+                </div>
+              </div>
+              <div id="reason-bars" class="bar-list"></div>
+            </article>
+          </div>
+        </section>
+
+        <section id="new-entry" class="section-band split">
+          <div>
+            <span class="eyebrow">Log replacement</span>
+            <h2>Record the original order error</h2>
+            <p class="section-copy">
+              Select the replacement reason, choose the technician who processed the original order, and submit. Each entry rolls into technician-level metrics automatically.
+            </p>
+          </div>
+          <form class="entry-form" id="replacement-form">
+            <label>
+              Replacement reason
+              <select id="entry-reason" required></select>
+            </label>
+            <label>
+              Original order technician
+              <select id="entry-tech" required></select>
+            </label>
+            <div class="form-row">
+              <label>
+                Original order number
+                <input id="entry-order" type="text" placeholder="Optional" />
+              </label>
+              <label>
+                Replacement date
+                <input id="entry-date" type="date" required />
+              </label>
+            </div>
+            <label>
+              Notes
+              <textarea id="entry-notes" rows="3" placeholder="Optional details"></textarea>
+            </label>
+            <button type="submit" class="primary-button">Submit replacement</button>
+            <p class="form-message" id="entry-message" role="status"></p>
+          </form>
+        </section>
+
+        <section id="analytics" class="section-band">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">Technician analytics</span>
+              <h2>Individual trend cards</h2>
+            </div>
+          </div>
+          <div id="tech-cards" class="tech-grid"></div>
+        </section>
+
+        <section id="manage" class="section-band">
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">Admin lists</span>
+              <h2>Technicians and replacement reasons</h2>
+            </div>
+          </div>
+          <div class="manage-grid">
+            <article class="panel">
+              <div class="panel-header">
+                <h3>Add technician</h3>
+              </div>
+              <form class="compact-form" id="tech-form">
+                <input id="tech-name" type="text" placeholder="Technician name" required />
+                <button type="submit">Add</button>
+              </form>
+              <div class="list" id="tech-list"></div>
+            </article>
+            <article class="panel">
+              <div class="panel-header">
+                <h3>Add reason</h3>
+              </div>
+              <form class="compact-form" id="reason-form">
+                <input id="reason-name" type="text" placeholder="Replacement reason" required />
+                <button type="submit">Add</button>
+              </form>
+              <div class="list" id="reason-list"></div>
+            </article>
+          </div>
+        </section>
+
+        <section id="setup" class="section-band setup-section">
+          <div>
+            <span class="eyebrow">Shared access</span>
+            <h2>Supabase connection</h2>
+            <p class="section-copy">
+              Add your Supabase project URL and anon key here, then publish these files anywhere. Everyone with the link will see the same metrics as long as your Supabase Row Level Security policies allow the shared access you want.
+            </p>
+          </div>
+          <form class="setup-form" id="config-form">
+            <label>
+              Supabase URL
+              <input id="supabase-url" type="url" placeholder="https://your-project.supabase.co" />
+            </label>
+            <label>
+              Supabase anon key
+              <input id="supabase-key" type="password" placeholder="eyJ..." />
+            </label>
+            <div class="button-row">
+              <button type="submit" class="primary-button">Save connection</button>
+              <button type="button" id="clear-config" class="secondary-button">Use demo data</button>
+            </div>
+            <p class="form-message" id="config-message" role="status"></p>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
