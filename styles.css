@@ -63,16 +63,13 @@ button {
   gap: 14px;
 }
 
-.brand-mark {
-  width: 44px;
-  height: 44px;
+.brand-logo {
+  width: 58px;
+  height: 58px;
   border-radius: 8px;
-  background: #58c4b8;
-  color: #10202c;
-  display: grid;
-  place-items: center;
-  font-weight: 800;
-  font-size: 22px;
+  background: #fff;
+  object-fit: cover;
+  object-position: left center;
 }
 
 .brand p,
